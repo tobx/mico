@@ -1,5 +1,5 @@
 [package]
-categories = ["Configuration", "Parser implementations"]
+categories = ["config", "parser-implementations"]
 description = "mico (minimalistic config file format) encoder and decoder"
 documentation = "https://docs.rs/mico"
 edition = "2021"
@@ -8,7 +8,7 @@ license-file = "LICENSE"
 name = "mico"
 readme = "README.md"
 repository = "https://github.com/tobx/mico"
-version = "0.1.0"
+version = "0.1.1"
 
 [dependencies]
 thiserror = "1.0.30"
