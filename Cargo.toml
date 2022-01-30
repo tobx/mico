@@ -1,0 +1,9 @@
+[package]
+categories = ["Configuration", "Parser implementations"]
+description = "mico (minimalistic config file format) encoder and decoder"
+edition = "2021"
+name = "mico"
+version = "0.1.0"
+
+[dependencies]
+thiserror = "1.0.30"
