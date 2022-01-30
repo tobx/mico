@@ -4,6 +4,7 @@ mico (minimalistic config file format) encoder and decoder
 
 TODO:
 
-- [ ] Implement decoder
-- [ ] Upload to Crates.io
+- [x] Implement encoder
+- [x] Upload to Crates.io
+- [ ] Add convenience functions to encode to and decode from strings
 - [ ] Add small documentation

@@ -1,54 +1,58 @@
-use std::io;
+mod emitter;
+mod parser;
 
-pub type Mappings = Vec<(String, Value)>;
+pub use emitter::Emitter;
+pub use parser::Parser;
 
 pub type List = Vec<String>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Value {
     List(List),
     String(String),
 }
-
-#[derive(Default)]
-pub struct Parser {
-    mappings: Mappings,
-    list: Option<(String, List)>,
-}
-
-impl Parser {
-    pub fn parse<R: io::BufRead>(mut self, reader: R) -> io::Result<Mappings> {
-        for line in reader.lines() {
-            let line = line?;
-            let line = line.trim();
-            if !line.is_empty() {
-                self.parse_line(line);
-            }
-        }
-        if let Some((key, list)) = self.list {
-            self.mappings.push((key, Value::List(list)));
-        }
-        Ok(self.mappings)
-    }
-
-    fn parse_line(&mut self, line: &str) {
-        if let Some((key, mut list)) = self.list.take() {
-            if let Some(item) = line.strip_prefix("- ") {
-                list.push(item.trim_start().into());
-                self.list = Some((key, list));
-                return;
-            }
-            self.mappings.push((key, Value::List(list)));
-        }
-        if let Some((key, value)) = line.split_once(": ") {
-            let key = key.trim_end().into();
-            let value = value.trim_start().into();
-            self.mappings.push((key, Value::String(value)));
-        } else {
-            self.list = Some((line.into(), List::new()));
-        }
+impl From<List> for Value {
+    fn from(value: List) -> Self {
+        Self::List(value)
     }
 }
 
-#[cfg(test)]
-mod tests;
+impl From<String> for Value {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
+
+macro_rules! impl_into_string_value {
+    ( $( $T:ty ),* ) => {
+        $(
+            impl From<$T> for Value {
+                fn from(value: $T) -> Value {
+                    Value::String(value.to_string())
+                }
+            }
+        )*
+    };
+}
+
+impl_into_string_value![
+    i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize, f32, f64, bool, char, &str
+];
+
+pub struct Mapping {
+    pub key: String,
+    pub value: Value,
+}
+
+impl Mapping {
+    pub fn new<K, V>(key: K, value: V) -> Self
+    where
+        K: Into<String>,
+        V: Into<Value>,
+    {
+        Self {
+            key: key.into(),
+            value: value.into(),
+        }
+    }
+}
