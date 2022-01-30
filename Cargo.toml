@@ -8,7 +8,4 @@ license-file = "LICENSE"
 name = "mico"
 readme = "README.md"
 repository = "https://github.com/tobx/mico"
-version = "0.1.2"
-
-[dependencies]
-thiserror = "1.0.30"
+version = "0.1.3"

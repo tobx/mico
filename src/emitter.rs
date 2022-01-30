@@ -40,16 +40,7 @@ impl<W: io::Write> Emitter<W> {
 
 #[cfg(test)]
 mod tests {
-    use crate::List;
-
-    use super::*;
-
-    fn encode(mappings: &[Mapping], indent_size: u8) -> io::Result<String> {
-        let mut buffer = Vec::new();
-        let mut emitter = Emitter::new(&mut buffer, indent_size);
-        emitter.emit(mappings)?;
-        Ok(std::str::from_utf8(buffer.as_slice()).unwrap().to_string())
-    }
+    use crate::*;
 
     fn list(values: &[&str]) -> List {
         values.iter().copied().map(Into::into).collect()
@@ -57,31 +48,31 @@ mod tests {
 
     #[test]
     fn test_string() {
-        let encoded = encode(&[Mapping::new("key", "value")], 0);
-        assert_eq!(encoded.unwrap(), "key: value\n");
+        let encoded = to_string(&[Mapping::new("key", "value")], 0);
+        assert_eq!(encoded, "key: value\n");
     }
 
     #[test]
     fn test_list() {
-        let encoded = encode(&[Mapping::new("key", list(&["value"]))], 0);
-        assert_eq!(encoded.unwrap(), "key\n- value\n");
+        let encoded = to_string(&[Mapping::new("key", list(&["value"]))], 0);
+        assert_eq!(encoded, "key\n- value\n");
     }
 
     #[test]
     fn test_list_indent() {
-        let encoded = encode(&[Mapping::new("key", list(&["value1", "value2"]))], 2);
-        assert_eq!(encoded.unwrap(), "key\n  - value1\n  - value2\n");
+        let encoded = to_string(&[Mapping::new("key", list(&["value1", "value2"]))], 2);
+        assert_eq!(encoded, "key\n  - value1\n  - value2\n");
     }
 
     #[test]
     fn test_empty() {
-        let encoded = encode(&[], 1);
-        assert_eq!(encoded.unwrap(), "");
+        let encoded = to_string(&[], 1);
+        assert_eq!(encoded, "");
     }
 
     #[test]
     fn test_mixed() {
-        let encoded = encode(
+        let encoded = to_string(
             &[
                 Mapping::new("key1", "value1"),
                 Mapping::new("key2", list(&["value2"])),
@@ -91,7 +82,7 @@ mod tests {
             2,
         );
         assert_eq!(
-            encoded.unwrap(),
+            encoded,
             concat!(
                 "key1: value1\n",
                 "key2\n  - value2\n",

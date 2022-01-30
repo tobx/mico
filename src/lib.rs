@@ -1,6 +1,8 @@
 mod emitter;
 mod parser;
 
+use std::io::Cursor;
+
 pub use emitter::Emitter;
 pub use parser::Parser;
 
@@ -55,4 +57,15 @@ impl Mapping {
             value: value.into(),
         }
     }
+}
+
+pub fn from_str(s: &str) -> Vec<Mapping> {
+    Parser::default().parse(Cursor::new(s)).unwrap()
+}
+
+pub fn to_string(mappings: &[Mapping], indent_size: u8) -> String {
+    let mut buffer = Vec::new();
+    let mut emitter = Emitter::new(&mut buffer, indent_size);
+    emitter.emit(mappings).unwrap();
+    std::str::from_utf8(buffer.as_slice()).unwrap().to_string()
 }

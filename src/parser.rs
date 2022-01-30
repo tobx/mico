@@ -44,9 +44,7 @@ impl Parser {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Cursor;
-
-    use super::*;
+    use crate::*;
 
     fn assert_list(mapping: Mapping, key: &str, value: &[&str]) {
         let list: List = value.iter().copied().map(Into::into).collect();
@@ -59,20 +57,16 @@ mod tests {
         assert_eq!(mapping.value, value.into());
     }
 
-    fn parse(config: &str) -> Vec<Mapping> {
-        Parser::default().parse(Cursor::new(config)).unwrap()
-    }
-
     #[test]
     fn test_string() {
-        let mut mappings = parse("key: value");
+        let mut mappings = from_str("key: value");
         assert_eq!(mappings.len(), 1);
         assert_string(mappings.remove(0), "key", "value");
     }
 
     #[test]
     fn test_string_with_whitespace() {
-        let mut mappings = parse(" key  with  whitespace :  value  with  whitespace ");
+        let mut mappings = from_str(" key  with  whitespace :  value  with  whitespace ");
         assert_eq!(mappings.len(), 1);
         assert_string(
             mappings.remove(0),
@@ -83,14 +77,14 @@ mod tests {
 
     #[test]
     fn test_list() {
-        let mut mappings = parse("key\n- value1\n- value2");
+        let mut mappings = from_str("key\n- value1\n- value2");
         assert_eq!(mappings.len(), 1);
         assert_list(mappings.remove(0), "key", &["value1", "value2"]);
     }
 
     #[test]
     fn test_list_with_whitespace() {
-        let mut mappings = parse(" key  with  whitespace \n -  value 1 \n -  value 2 ");
+        let mut mappings = from_str(" key  with  whitespace \n -  value 1 \n -  value 2 ");
         assert_eq!(mappings.len(), 1);
         assert_list(
             mappings.remove(0),
@@ -101,13 +95,13 @@ mod tests {
 
     #[test]
     fn test_empty() {
-        let mappings = parse(" ");
+        let mappings = from_str(" ");
         assert_eq!(mappings.len(), 0);
     }
 
     #[test]
     fn test_empty_lists() {
-        let mut mappings = parse("key1\nkey2");
+        let mut mappings = from_str("key1\nkey2");
         assert_eq!(mappings.len(), 2);
         assert_list(mappings.remove(0), "key1", &[]);
         assert_list(mappings.remove(0), "key2", &[]);
@@ -115,7 +109,7 @@ mod tests {
 
     #[test]
     fn test_mixed() {
-        let mut mappings = parse(concat!(
+        let mut mappings = from_str(concat!(
             "key1: value1\n",
             " \n",
             "key2\n",

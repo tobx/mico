@@ -6,5 +6,5 @@ TODO:
 
 - [x] Implement encoder
 - [x] Upload to Crates.io
-- [ ] Add convenience functions to encode to and decode from strings
+- [x] Add convenience functions to encode to and decode from strings
 - [ ] Add small documentation
