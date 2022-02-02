@@ -1,6 +1,6 @@
 [package]
 categories = ["config", "parser-implementations"]
-description = "mico (minimalistic config file format) encoder and decoder"
+description = "mico (minimalistic config file format) parser and emitter"
 documentation = "https://docs.rs/mico"
 edition = "2021"
 homepage = "https://github.com/tobx/mico"
@@ -8,4 +8,4 @@ license-file = "LICENSE"
 name = "mico"
 readme = "README.md"
 repository = "https://github.com/tobx/mico"
-version = "0.1.3"
+version = "0.1.4"
