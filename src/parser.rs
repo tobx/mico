@@ -46,30 +46,32 @@ impl Parser {
 mod tests {
     use crate::*;
 
-    fn assert_list(mapping: Mapping, key: &str, value: &[&str]) {
+    fn assert_list(mapping: Option<&Mapping>, key: &str, value: &[&str]) {
+        let mapping = mapping.unwrap();
         let list: List = value.iter().copied().map(Into::into).collect();
         assert_eq!(mapping.key, key);
         assert_eq!(mapping.value, list.into());
     }
 
-    fn assert_string(mapping: Mapping, key: &str, value: &str) {
+    fn assert_string(mapping: Option<&Mapping>, key: &str, value: &str) {
+        let mapping = mapping.unwrap();
         assert_eq!(mapping.key, key);
         assert_eq!(mapping.value, value.into());
     }
 
     #[test]
     fn test_string() {
-        let mut mappings = from_str("key: value");
+        let mappings = from_str("key: value");
         assert_eq!(mappings.len(), 1);
-        assert_string(mappings.remove(0), "key", "value");
+        assert_string(mappings.get(0), "key", "value");
     }
 
     #[test]
     fn test_string_with_whitespace() {
-        let mut mappings = from_str(" key  with  whitespace :  value  with  whitespace ");
+        let mappings = from_str(" key  with  whitespace :  value  with  whitespace ");
         assert_eq!(mappings.len(), 1);
         assert_string(
-            mappings.remove(0),
+            mappings.get(0),
             "key  with  whitespace",
             "value  with  whitespace",
         );
@@ -77,17 +79,17 @@ mod tests {
 
     #[test]
     fn test_list() {
-        let mut mappings = from_str("key\n- value1\n- value2");
+        let mappings = from_str("key\n- value1\n- value2");
         assert_eq!(mappings.len(), 1);
-        assert_list(mappings.remove(0), "key", &["value1", "value2"]);
+        assert_list(mappings.get(0), "key", &["value1", "value2"]);
     }
 
     #[test]
     fn test_list_with_whitespace() {
-        let mut mappings = from_str(" key  with  whitespace \n -  value 1 \n -  value 2 ");
+        let mappings = from_str(" key  with  whitespace \n -  value 1 \n -  value 2 ");
         assert_eq!(mappings.len(), 1);
         assert_list(
-            mappings.remove(0),
+            mappings.get(0),
             "key  with  whitespace",
             &["value 1", "value 2"],
         );
@@ -101,15 +103,15 @@ mod tests {
 
     #[test]
     fn test_empty_lists() {
-        let mut mappings = from_str("key1\nkey2");
+        let mappings = from_str("key1\nkey2");
         assert_eq!(mappings.len(), 2);
-        assert_list(mappings.remove(0), "key1", &[]);
-        assert_list(mappings.remove(0), "key2", &[]);
+        assert_list(mappings.get(0), "key1", &[]);
+        assert_list(mappings.get(1), "key2", &[]);
     }
 
     #[test]
     fn test_mixed() {
-        let mut mappings = from_str(concat!(
+        let mappings = from_str(concat!(
             "key1: value1\n",
             " \n",
             "key2\n",
@@ -119,9 +121,9 @@ mod tests {
             "- value4\n",
         ));
         assert_eq!(mappings.len(), 4);
-        assert_string(mappings.remove(0), "key1", "value1");
-        assert_list(mappings.remove(0), "key2", &["value2"]);
-        assert_string(mappings.remove(0), "key3", "value3");
-        assert_list(mappings.remove(0), "key4", &["value4"]);
+        assert_string(mappings.get(0), "key1", "value1");
+        assert_list(mappings.get(1), "key2", &["value2"]);
+        assert_string(mappings.get(2), "key3", "value3");
+        assert_list(mappings.get(3), "key4", &["value4"]);
     }
 }
