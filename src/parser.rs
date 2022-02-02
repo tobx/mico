@@ -25,14 +25,14 @@ impl Parser {
 
     fn parse_line(&mut self, line: &str) {
         if let Some((key, mut list)) = self.list.take() {
-            if let Some(value) = line.strip_prefix("- ") {
+            if let Some(value) = line.strip_prefix("-") {
                 list.push(value.trim_start().into());
                 self.list = Some((key, list));
                 return;
             }
             self.mappings.push(Mapping::new(key, list));
         }
-        if let Some((key, value)) = line.split_once(": ") {
+        if let Some((key, value)) = line.split_once(":") {
             let key = key.trim_end();
             let value = value.trim_start();
             self.mappings.push(Mapping::new(key, value));
